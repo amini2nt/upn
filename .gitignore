@@ -1,0 +1,7 @@
+*.pkl
+*.pyc
+__pycache__
+*.save*
+reacher*
+trajectories
+*py~
