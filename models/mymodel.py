@@ -21,7 +21,7 @@ from skimage.transform import resize
 #model = PPO2(MlpPolicy, env, verbose=1)
 #model.learn(total_timesteps=10)
 #model.save("Reacher-v2-model")
-model = PPO2.load("Reacher-10e6-model.pkl")
+model = PPO2.load("Reacher-1e6-model.pkl")
 env = gym.make('Reacher-v2')
 env = DummyVecEnv([lambda: env])  
 traj = 1
@@ -29,12 +29,13 @@ all_actions = []
 all_imgs = []
 all_states = []
 while traj<=20000:
+  print("trajectory"+str(traj))
   currentStepImages = []
   obs = env.reset()
   allStates = obs
   allActions = np.empty((0, 2))
-  screen = env.render(mode='rgb_array')
-  currentStepImages.append(resize(screen,(84,84)).tolist())
+  screen = env.render(mode='rgb_array') *255
+  currentStepImages.append(resize(screen,(84,84)).astype(np.uint8).tolist())
 
   i = 1
 #keep in mind that if we have n actions we have n+1 observations(states)
@@ -43,8 +44,8 @@ while traj<=20000:
     allActions = np.append(allActions,action,axis=0)
     obs, rewards, dones, info = env.step(action)
     allStates = np.append(allStates,obs,axis=0)
-    screen = env.render(mode='rgb_array')
-    currentStepImages.append(resize(screen,(84,84)).tolist())
+    screen = env.render(mode='rgb_array')*255
+    currentStepImages.append(resize(screen,(84,84)).astype(np.uint8).tolist())
 
 
     if dones:
@@ -53,19 +54,15 @@ while traj<=20000:
   all_actions.append(allActions.tolist())
   all_states.append(allStates.tolist())
   all_imgs.append(currentStepImages)
-  with open('all_imgs.pkl', 'wb') as f:
+  traj += 1
+  
+with open('all_imgs.pkl', 'wb') as f:
     pickle.dump(all_imgs, f)
-  with open('all_states.pkl', 'wb') as f:
-     pickle.dump(all_states, f)
-  with open('all_actions.pkl', 'wb') as f:
-     pickle.dump(all_states, f)
+with open('all_states.pkl', 'wb') as f:
+    pickle.dump(all_states, f)
+with open('all_actions.pkl', 'wb') as f:
+    pickle.dump(all_states, f)
 
 
-
-
-
-
-
-s
 
 
